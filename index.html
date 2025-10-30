@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAAT to PASP Calculator</title>
+    <title>PAAT to EPSPAP Calculator</title>
     <style>
         * {
             margin: 0;
@@ -48,7 +48,8 @@
             background: #edf2f7;
             border-left: 4px solid #667eea;
             padding: 15px;
-            margin-bottom: 25px;
+            margin-top: 25px;
+            margin-bottom: 0;
             border-radius: 4px;
         }
         
@@ -209,14 +210,8 @@
 </head>
 <body>
     <div class="calculator-container">
-        <h1>🫀 PAAT to PASP Calculator</h1>
-        <p class="subtitle">Estimate Peak Pulmonary Artery Systolic Pressure</p>
-        
-        <div class="info-box">
-            <p><strong>About:</strong> This calculator estimates peak systolic pulmonary artery pressure (EPSPAP) from pulmonary artery acceleration time (PAAT) measured by Doppler echocardiography. <strong>Particularly useful when tricuspid regurgitation is absent or insufficient for pressure estimation.</strong></p>
-            <p><strong>Formula:</strong> log₁₀(EPSPAP) = -0.004(PAAT) + 2.1</p>
-            <p><strong>Clinical Context:</strong> In the original study, PAAT was measurable in 99.6% of patients, while 25% had insufficient TR for conventional pressure estimation.</p>
-        </div>
+        <h1>🫀 PAAT to EPSPAP Calculator</h1>
+        <p class="subtitle">Estimate Peak Systolic Pulmonary Artery Pressure</p>
         
         <div class="input-group">
             <label for="paat">Pulmonary Artery Acceleration Time (PAAT)</label>
@@ -232,7 +227,7 @@
             </div>
         </div>
         
-        <button class="calculate-btn" onclick="calculateEPSPAP()">Calculate PASP</button>
+        <button class="calculate-btn" onclick="calculateEPSPAP()">Calculate EPSPAP</button>
         
         <div id="result" class="result-container">
             <div class="result-label">Estimated Peak Systolic PAP</div>
@@ -246,6 +241,12 @@
             <div class="warning">
                 <strong>⚠️ Clinical Use Warning:</strong> This calculator is for educational purposes. Clinical decisions should not be based solely on this calculation.
             </div>
+        </div>
+        
+        <div class="info-box">
+            <p><strong>About:</strong> This calculator estimates peak systolic pulmonary artery pressure (EPSPAP) from pulmonary artery acceleration time (PAAT) measured by Doppler echocardiography. <strong>Particularly useful when tricuspid regurgitation is absent or insufficient for pressure estimation.</strong></p>
+            <p><strong>Formula:</strong> log₁₀(EPSPAP) = -0.004(PAAT) + 2.1</p>
+            <p><strong>Clinical Context:</strong> In the original study, PAAT was measurable in 99.6% of patients, while 25% had insufficient TR for conventional pressure estimation.</p>
         </div>
         
         <div class="reference">
