@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAAT to PASP Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .calculator-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .info-box {
+            background: #edf2f7;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .info-box p {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            padding-right: 60px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .unit {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-container {
+            margin-top: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-label {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .result-value {
+            color: #667eea;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .result-unit {
+            color: #718096;
+            font-size: 18px;
+        }
+        
+        .warning {
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #742a2a;
+            line-height: 1.5;
+        }
+        
+        .reference {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            font-size: 12px;
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .reference strong {
+            color: #4a5568;
+        }
+        
+        .formula {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #2d3748;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>🫀 PAAT to PASP Calculator</h1>
+        <p class="subtitle">Estimate Peak Pulmonary Artery Systolic Pressure</p>
+        
+        <div class="info-box">
+            <p><strong>About:</strong> This calculator estimates peak systolic pulmonary artery pressure (EPSPAP) from pulmonary artery acceleration time (PAAT) measured by Doppler echocardiography. <strong>Particularly useful when tricuspid regurgitation is absent or insufficient for pressure estimation.</strong></p>
+            <p><strong>Formula:</strong> log₁₀(EPSPAP) = -0.004(PAAT) + 2.1</p>
+            <p><strong>Clinical Context:</strong> In the original study, PAAT was measurable in 99.6% of patients, while 25% had insufficient TR for conventional pressure estimation.</p>
+        </div>
+        
+        <div class="input-group">
+            <label for="paat">Pulmonary Artery Acceleration Time (PAAT)</label>
+            <div class="input-wrapper">
+                <input 
+                    type="number" 
+                    id="paat" 
+                    placeholder="Enter PAAT value"
+                    min="0"
+                    step="1"
+                >
+                <span class="unit">msec</span>
+            </div>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculateEPSPAP()">Calculate PASP</button>
+        
+        <div id="result" class="result-container">
+            <div class="result-label">Estimated Peak Systolic PAP</div>
+            <div>
+                <span class="result-value" id="epspap-value">--</span>
+                <span class="result-unit">mm Hg</span>
+            </div>
+            <div class="warning" id="range-warning" style="display: none;">
+                <strong>⚠️ Outside Validation Range:</strong> PAAT value is outside the validation range of 43-186 msec from the original study. Results may be less accurate.
+            </div>
+            <div class="warning">
+                <strong>⚠️ Clinical Use Warning:</strong> This calculator is for educational purposes. Clinical decisions should not be based solely on this calculation.
+            </div>
+        </div>
+        
+        <div class="reference">
+            <strong>Reference:</strong> Yared K, Noseworthy P, Weyman AE, McCabe E, Picard MH, Baggish AL. Pulmonary Artery Acceleration Time Provides an Accurate Estimate of Systolic Pulmonary Arterial Pressure during Transthoracic Echocardiography. <em>J Am Soc Echocardiogr.</em> 2011;24:687-92.
+            <div class="formula">
+                Interobserver variability: r = 0.97<br>
+                Correlation with TR-derived EPSPAP: r = -0.95
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function calculateEPSPAP() {
+            const paatInput = document.getElementById('paat');
+            const paat = parseFloat(paatInput.value);
+            const resultContainer = document.getElementById('result');
+            const epspapValue = document.getElementById('epspap-value');
+            const rangeWarning = document.getElementById('range-warning');
+            
+            // Validate input
+            if (isNaN(paat) || paat <= 0) {
+                alert('Please enter a valid PAAT value greater than 0');
+                return;
+            }
+            
+            // Check if outside validation range and show/hide warning
+            if (paat < 43 || paat > 186) {
+                rangeWarning.style.display = 'block';
+            } else {
+                rangeWarning.style.display = 'none';
+            }
+            
+            // Calculate EPSPAP
+            // Formula: log10(EPSPAP) = -0.004(PAAT) + 2.1
+            // Therefore: EPSPAP = 10^(-0.004*PAAT + 2.1)
+            const logEPSPAP = -0.004 * paat + 2.1;
+            const epspap = Math.pow(10, logEPSPAP);
+            
+            // Reset animation by removing and re-adding the show class
+            resultContainer.classList.remove('show');
+            
+            // Update result value
+            epspapValue.textContent = epspap.toFixed(1);
+            
+            // Use setTimeout to ensure the class removal is processed before re-adding
+            setTimeout(() => {
+                resultContainer.classList.add('show');
+                // Smooth scroll to result
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 10);
+        }
+        
+        // Hide result when input changes
+        document.getElementById('paat').addEventListener('input', function() {
+            const resultContainer = document.getElementById('result');
+            resultContainer.classList.remove('show');
+        });
+        
+        // Allow Enter key to calculate
+        document.getElementById('paat').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateEPSPAP();
+            }
+        });
+    </script>
+</body>
+</html>
