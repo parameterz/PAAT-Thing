@@ -1,316 +1,644 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAAT to EPSPAP Calculator</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PAAT to PASP Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        overflow-x: hidden;
+      }
+
+      .calculator-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 30px;
+      }
+
+      h1 {
+        color: #2d3748;
+        font-size: 24px;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      .subtitle {
+        color: #718096;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .instructions {
+        background: #f7fafc;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 25px;
+      }
+
+      .instructions h2 {
+        color: #2d3748;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .instruction-image {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        display: block;
+        margin: 0 auto 20px auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .instruction-image:last-child {
+        margin-bottom: 0;
+      }
+
+      .instruction-caption {
+        color: #4a5568;
+        font-size: 13px;
+        text-align: center;
+        margin-top: 8px;
+        margin-bottom: 20px;
+        font-style: italic;
+      }
+
+      .picker-label {
+        color: #2d3748;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 15px;
+      }
+
+      .picker-container {
+        position: relative;
+        height: 280px;
+        margin-bottom: 30px;
+        background: #f7fafc;
+        border-radius: 15px;
+        overflow: hidden;
+      }
+
+      .picker-highlight {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 56px;
+        transform: translateY(-50%);
+        background: rgba(102, 126, 234, 0.1);
+        border-top: 2px solid #667eea;
+        border-bottom: 2px solid #667eea;
+        pointer-events: none;
+        z-index: 10;
+      }
+
+      .picker-scroll {
+        height: 100%;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 112px 0;
+      }
+
+      .picker-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .picker-item {
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+        scroll-snap-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .picker-paat {
+        font-size: 24px;
+        font-weight: 600;
+        color: #4a5568;
+      }
+
+      .picker-arrow {
+        font-size: 20px;
+        color: #cbd5e0;
+      }
+
+      .picker-epspap {
+        font-size: 24px;
+        font-weight: 600;
+        color: #667eea;
+      }
+
+      .picker-unit {
+        font-size: 14px;
+        color: #718096;
+        margin-left: 5px;
+      }
+
+      .result-display {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        margin-bottom: 25px;
+      }
+
+      .result-row {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .result-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .result-box {
+        flex: 1;
+      }
+
+      .result-label {
+        color: #718096;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+      }
+
+      .result-value {
+        color: #2d3748;
+        font-size: 36px;
+        font-weight: 700;
+      }
+
+      .result-value.highlight {
+        color: #667eea;
+      }
+
+      .result-unit-large {
+        color: #718096;
+        font-size: 16px;
+        margin-left: 5px;
+      }
+
+      .status-indicator {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 10px;
+      }
+
+      .status-normal {
+        background: #c6f6d5;
+        color: #22543d;
+      }
+
+      .status-elevated {
+        background: #fed7d7;
+        color: #742a2a;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 20px;
+        background: #f7fafc;
+        border-radius: 15px;
+        padding: 20px;
+      }
+
+      .info-box {
+        background: #edf2f7;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 4px;
+      }
+
+      .info-box p {
+        color: #4a5568;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 8px;
+      }
+
+      .info-box p:last-child {
+        margin-bottom: 0;
+      }
+
+      .warning {
+        background: #fff5f5;
+        border-left: 4px solid #fc8181;
+        padding: 12px;
+        margin-top: 15px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #742a2a;
+        line-height: 1.5;
+      }
+
+      .reference {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 2px solid #e2e8f0;
+        font-size: 11px;
+        color: #718096;
+        line-height: 1.6;
+      }
+      .footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #e2e8f0;
+        text-align: center;
+        font-size: 12px;
+        color: #718096;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .footer-version {
+        font-weight: 600;
+        color: #4a5568;
+      }
+
+      .footer-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+
+      .footer-link:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+
+      @media (min-width: 600px) {
+        .footer-content {
+          flex-direction: row;
+          justify-content: center;
+          gap: 20px;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+
+        .footer-divider {
+          color: #cbd5e0;
         }
-        
-        .calculator-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-        
-        h1 {
-            color: #2d3748;
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .subtitle {
-            color: #718096;
-            font-size: 16px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .info-box {
-            background: #edf2f7;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-top: 25px;
-            margin-bottom: 0;
-            border-radius: 4px;
-        }
-        
-        .info-box p {
-            color: #4a5568;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 8px;
-        }
-        
-        .info-box p:last-child {
-            margin-bottom: 0;
-        }
-        
-        .input-group {
-            margin-bottom: 25px;
-        }
-        
-        label {
-            display: block;
-            color: #2d3748;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        
-        .input-wrapper {
-            position: relative;
-        }
-        
-        input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            padding-right: 60px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 18px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .unit {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #718096;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .calculate-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-        
-        .calculate-btn:active {
-            transform: translateY(0);
-        }
-        
-        .result-container {
-            margin-top: 25px;
-            padding: 25px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 10px;
-            text-align: center;
-            display: none;
-        }
-        
-        .result-container.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .result-label {
-            color: #4a5568;
-            font-size: 14px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .result-value {
-            color: #667eea;
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .result-unit {
-            color: #718096;
-            font-size: 18px;
-        }
-        
-        .warning {
-            background: #fff5f5;
-            border-left: 4px solid #fc8181;
-            padding: 12px;
-            margin-top: 15px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #742a2a;
-            line-height: 1.5;
-        }
-        
-        .reference {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
-            font-size: 12px;
-            color: #718096;
-            line-height: 1.6;
-        }
-        
-        .reference strong {
-            color: #4a5568;
-        }
-        
-        .formula {
-            background: #f7fafc;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #2d3748;
-            text-align: center;
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="calculator-container">
-        <h1>🫀 PAAT to EPSPAP Calculator</h1>
-        <p class="subtitle">Estimate Peak Systolic Pulmonary Artery Pressure</p>
-        
-        <div class="input-group">
-            <label for="paat">Pulmonary Artery Acceleration Time (PAAT)</label>
-            <div class="input-wrapper">
-                <input 
-                    type="number" 
-                    id="paat" 
-                    placeholder="Enter PAAT value"
-                    min="0"
-                    step="1"
-                >
-                <span class="unit">msec</span>
-            </div>
+      <h1>🫀 PAAT to PASP Calculator</h1>
+      <p class="subtitle">Scroll to select your PAAT measurement</p>
+
+      <div class="picker-label">Pulmonary Artery Acceleration Time (PAAT)</div>
+
+      <div class="picker-container">
+        <div class="picker-highlight"></div>
+        <div class="picker-scroll" id="picker-scroll">
+          <!-- Items will be generated by JavaScript -->
         </div>
-        
-        <button class="calculate-btn" onclick="calculateEPSPAP()">Calculate EPSPAP</button>
-        
-        <div id="result" class="result-container">
-            <div class="result-label">Estimated Peak Systolic PAP</div>
+      </div>
+
+      <div class="result-display">
+        <div class="result-row">
+          <div class="result-box">
+            <div class="result-label">PAAT</div>
             <div>
-                <span class="result-value" id="epspap-value">--</span>
-                <span class="result-unit">mm Hg</span>
+              <span class="result-value" id="display-paat">139</span>
+              <span class="result-unit-large">msec</span>
             </div>
-            <div class="warning" id="range-warning" style="display: none;">
-                <strong>⚠️ Outside Validation Range:</strong> PAAT value is outside the validation range of 43-186 msec from the original study. Results may be less accurate.
+          </div>
+          <div style="font-size: 24px; color: #cbd5e0">→</div>
+          <div class="result-box">
+            <div class="result-label">PASP</div>
+            <div>
+              <span class="result-value highlight" id="display-epspap"
+                >35.0</span
+              >
+              <span class="result-unit-large">mmHg</span>
             </div>
-            <div class="warning">
-                <strong>⚠️ Clinical Use Warning:</strong> This calculator is for educational purposes. Clinical decisions should not be based solely on this calculation.
-            </div>
+          </div>
         </div>
-        
-        <div class="info-box">
-            <p><strong>About:</strong> This calculator estimates peak systolic pulmonary artery pressure (EPSPAP) from pulmonary artery acceleration time (PAAT) measured by Doppler echocardiography. <strong>Particularly useful when tricuspid regurgitation is absent or insufficient for pressure estimation.</strong></p>
-            <p><strong>Formula:</strong> log₁₀(EPSPAP) = -0.004(PAAT) + 2.1</p>
-            <p><strong>Clinical Context:</strong> In the original study, PAAT was measurable in 99.6% of patients, while 25% had insufficient TR for conventional pressure estimation.</p>
+        <div id="status-indicator" class="status-indicator status-elevated">
+          Elevated (PH Threshold)
         </div>
-        
-        <div class="reference">
-            <strong>Reference:</strong> Yared K, Noseworthy P, Weyman AE, McCabe E, Picard MH, Baggish AL. Pulmonary Artery Acceleration Time Provides an Accurate Estimate of Systolic Pulmonary Arterial Pressure during Transthoracic Echocardiography. <em>J Am Soc Echocardiogr.</em> 2011;24:687-92.
-            <div class="formula">
-                Interobserver variability: r = 0.97<br>
-                Correlation with TR-derived EPSPAP: r = -0.95
-            </div>
+      </div>
+
+      <div class="chart-container">
+        <canvas id="paatChart"></canvas>
+      </div>
+
+      <div class="info-box">
+        <p>
+          <strong>About:</strong> This calculator estimates peak pulmonary
+          artery systolic pressure (PASP) from pulmonary artery acceleration
+          time (PAAT).
+          <strong
+            >Particularly useful when tricuspid regurgitation is absent or
+            insufficient.</strong
+          >
+        </p>
+        <p><strong>Formula:</strong> log₁₀(PASP) = -0.004(PAAT) + 2.1</p>
+        <p>
+          <strong>Clinical Context:</strong> PAAT &lt; 139 msec suggests PASP ≥
+          35 mmHg (pulmonary hypertension threshold).
+        </p>
+      </div>
+      <div class="instructions">
+        <h2>📖 How to Measure PAAT</h2>
+
+        <img
+          src="PSAX.png"
+          alt="Parasternal short axis view showing sample volume placement"
+          class="instruction-image"
+        />
+        <p class="instruction-caption">
+          Step 1: Obtain parasternal short-axis view and place pulsed-wave
+          Doppler sample volume at the pulmonic valve annulus
+        </p>
+
+        <img
+          src="PAAT_timing.png"
+          alt="Doppler waveform showing PAAT measurement"
+          class="instruction-image"
+        />
+        <p class="instruction-caption">
+          Step 2: Measure the time between onset of systolic PA flow and peak
+          velocity
+        </p>
+      </div>
+
+      <div class="warning">
+        <strong>⚠️ Clinical Use Warning:</strong> For educational purposes only.
+        Clinical decisions should not be based solely on this calculation.
+        Validation range: PAAT 43-186 msec, PASP 19-102 mmHg.
+      </div>
+
+      <div class="reference">
+        <strong>Reference:</strong> Yared K, Noseworthy P, Weyman AE, McCabe E,
+        Picard MH, Baggish AL.
+        <a
+          href="https://pubmed.ncbi.nlm.nih.gov/21511434/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Pulmonary Artery Acceleration Time Provides an Accurate Estimate of
+          Systolic Pulmonary Arterial Pressure during Transthoracic
+          Echocardiography.</a
+        >
+        <em>J Am Soc Echocardiogr.</em> 2011;24:687-92.
+      </div>
+      <div class="footer">
+        <div class="footer-content">
+          <span class="footer-version">Version 1.1 • November 1, 2025</span>
+          <span class="footer-divider">|</span>
+          <span
+            >Created by
+            <a
+              href="https://www.linkedin.com/in/dan-dyar-ma-acs-rdcs-ae-pe-fe-fase/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="footer-link"
+              >Dan Dyar, MA, ACS, RDCS, FASE</a
+            ></span
+          >
         </div>
+      </div>
     </div>
-    
+
     <script>
-        function calculateEPSPAP() {
-            const paatInput = document.getElementById('paat');
-            const paat = parseFloat(paatInput.value);
-            const resultContainer = document.getElementById('result');
-            const epspapValue = document.getElementById('epspap-value');
-            const rangeWarning = document.getElementById('range-warning');
-            
-            // Validate input
-            if (isNaN(paat) || paat <= 0) {
-                alert('Please enter a valid PAAT value greater than 0');
-                return;
-            }
-            
-            // Check if outside validation range and show/hide warning
-            if (paat < 43 || paat > 186) {
-                rangeWarning.style.display = 'block';
-            } else {
-                rangeWarning.style.display = 'none';
-            }
-            
-            // Calculate EPSPAP
-            // Formula: log10(EPSPAP) = -0.004(PAAT) + 2.1
-            // Therefore: EPSPAP = 10^(-0.004*PAAT + 2.1)
-            const logEPSPAP = -0.004 * paat + 2.1;
-            const epspap = Math.pow(10, logEPSPAP);
-            
-            // Reset animation by removing and re-adding the show class
-            resultContainer.classList.remove('show');
-            
-            // Update result value
-            epspapValue.textContent = epspap.toFixed(1);
-            
-            // Use setTimeout to ensure the class removal is processed before re-adding
-            setTimeout(() => {
-                resultContainer.classList.add('show');
-                // Smooth scroll to result
-                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 10);
+      let paatChart = null;
+      let currentPAAT = 139;
+      let isScrolling = false;
+
+      // Generate picker items
+      function generatePickerItems() {
+        const pickerScroll = document.getElementById("picker-scroll");
+
+        for (let paat = 43; paat <= 200; paat++) {
+          const logEPSPAP = -0.004 * paat + 2.1;
+          const epspap = Math.pow(10, logEPSPAP);
+
+          const item = document.createElement("div");
+          item.className = "picker-item";
+          item.dataset.paat = paat;
+          item.innerHTML = `
+                    <div>
+                        <span class="picker-paat">${paat}</span>
+                        <span class="picker-unit">msec</span>
+                    </div>
+                    <span class="picker-arrow">→</span>
+                    <div>
+                        <span class="picker-epspap">${epspap.toFixed(1)}</span>
+                        <span class="picker-unit">mmHg</span>
+                    </div>
+                `;
+          pickerScroll.appendChild(item);
         }
-        
-        // Hide result when input changes
-        document.getElementById('paat').addEventListener('input', function() {
-            const resultContainer = document.getElementById('result');
-            resultContainer.classList.remove('show');
+      }
+
+      // Initialize chart
+      function initializeChart() {
+        const paatValues = [];
+        const epspapValues = [];
+
+        for (let paat = 40; paat <= 200; paat += 2) {
+          const logEPSPAP = -0.004 * paat + 2.1;
+          const epspap = Math.pow(10, logEPSPAP);
+          paatValues.push(paat);
+          epspapValues.push(epspap);
+        }
+
+        const ctx = document.getElementById("paatChart").getContext("2d");
+
+        paatChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: paatValues,
+            datasets: [
+              {
+                label: "PASP Curve",
+                data: epspapValues,
+                borderColor: "#667eea",
+                backgroundColor: "rgba(102, 126, 234, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                enabled: false,
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "PAAT (msec)",
+                  font: { size: 12, weight: "bold" },
+                },
+                grid: { color: "rgba(0, 0, 0, 0.05)" },
+                ticks: { font: { size: 10 } },
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "PASP (mmHg)",
+                  font: { size: 12, weight: "bold" },
+                },
+                grid: { color: "rgba(0, 0, 0, 0.05)" },
+                ticks: { font: { size: 10 } },
+                min: 10,
+                max: 110,
+              },
+            },
+          },
+          plugins: [
+            {
+              id: "customLines",
+              afterDatasetsDraw: (chart) => {
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+
+                // PH threshold line at 35 mmHg
+                const yPixel35 = yAxis.getPixelForValue(35);
+                ctx.save();
+                ctx.strokeStyle = "rgba(245, 101, 101, 0.5)";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(xAxis.left, yPixel35);
+                ctx.lineTo(xAxis.right, yPixel35);
+                ctx.stroke();
+
+                // Current selection crosshairs
+                const logEPSPAP = -0.004 * currentPAAT + 2.1;
+                const epspap = Math.pow(10, logEPSPAP);
+
+                const xPixel = xAxis.getPixelForValue(currentPAAT);
+                const yPixel = yAxis.getPixelForValue(epspap);
+
+                ctx.strokeStyle = "rgba(245, 101, 101, 0.4)";
+                ctx.lineWidth = 2;
+
+                ctx.beginPath();
+                ctx.moveTo(xPixel, yAxis.bottom);
+                ctx.lineTo(xPixel, yPixel);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(yAxis.left, yPixel);
+                ctx.lineTo(xPixel, yPixel);
+                ctx.stroke();
+
+                ctx.restore();
+              },
+            },
+          ],
         });
-        
-        // Allow Enter key to calculate
-        document.getElementById('paat').addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                calculateEPSPAP();
-            }
-        });
+      }
+
+      // Update display and chart
+      function updateDisplay(paat) {
+        currentPAAT = paat;
+        const logEPSPAP = -0.004 * paat + 2.1;
+        const epspap = Math.pow(10, logEPSPAP);
+
+        // Update display values
+        document.getElementById("display-paat").textContent = paat;
+        document.getElementById("display-epspap").textContent =
+          epspap.toFixed(0);
+
+        // Update status indicator
+        const statusIndicator = document.getElementById("status-indicator");
+        if (epspap >= 35) {
+          statusIndicator.textContent = "Elevated (≥35 mmHg)";
+          statusIndicator.className = "status-indicator status-elevated";
+        } else {
+          statusIndicator.textContent = "Normal (<35 mmHg)";
+          statusIndicator.className = "status-indicator status-normal";
+        }
+
+        // Update chart (crosshairs are drawn based on currentPAAT)
+        paatChart.update("none"); // Update without animation for smoothness
+      }
+
+      // Handle scroll
+      function handleScroll() {
+        const pickerScroll = document.getElementById("picker-scroll");
+        const scrollTop = pickerScroll.scrollTop;
+        const itemHeight = 56;
+
+        // Calculate which item is centered
+        // The padding at top is 112px, which centers the first item at scrollTop = 0
+        const index = Math.round(scrollTop / itemHeight);
+        const paat = 43 + index;
+
+        if (paat >= 43 && paat <= 200 && paat !== currentPAAT) {
+          updateDisplay(paat);
+        }
+      }
+
+      // Scroll to initial position (139 msec)
+      function scrollToInitial() {
+        const pickerScroll = document.getElementById("picker-scroll");
+        const itemHeight = 56;
+        const initialIndex = 139 - 43; // 139 msec is our starting point (PH threshold)
+
+        pickerScroll.scrollTop = initialIndex * itemHeight;
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        generatePickerItems();
+        initializeChart();
+        scrollToInitial();
+
+        const pickerScroll = document.getElementById("picker-scroll");
+        pickerScroll.addEventListener("scroll", handleScroll);
+      });
     </script>
-</body>
+  </body>
 </html>
